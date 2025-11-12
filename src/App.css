@@ -111,6 +111,13 @@
   color: #7a6458;
 }
 
+.prompt-tag {
+  display: block;
+  font-size: 0.85rem;
+  color: #b08a7a;
+  margin-top: 0.15rem;
+}
+
 .choices {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
