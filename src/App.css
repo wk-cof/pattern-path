@@ -14,6 +14,31 @@
   padding: 0 0.25rem;
 }
 
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.5rem;
+}
+
+.stats__item {
+  background: #fff4e7;
+  border-radius: 18px;
+  padding: 0.75rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.stats__label {
+  display: block;
+  font-size: 0.8rem;
+  color: #a07f6b;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.stats__value {
+  font-size: 1.3rem;
+}
+
 .badge {
   font-size: 1.2rem;
 }
@@ -57,6 +82,7 @@
   gap: 0.25rem;
   margin-bottom: 0.8rem;
   font-size: 1.4rem;
+  flex-wrap: wrap;
 }
 
 .pattern {

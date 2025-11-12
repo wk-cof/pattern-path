@@ -12,8 +12,14 @@ const levels: Level[] = [
   { pattern: ['🍓', '🍓', '🍋', '🍓', '🍓', '🍋'], missingIndex: 2, choices: ['🍇', '🍋', '🍓'] },
   { pattern: ['🚗', '🚕', '🚕', '🚗', '🚕', '🚕'], missingIndex: 3, choices: ['🚗', '🚕', '🚌'] },
   { pattern: ['🐚', '🐠', '🐬', '🐚', '🐠', '🐬'], missingIndex: 5, choices: ['🐬', '🐠', '🐳'] },
-  { pattern: ['🌈', '☁️', '🌈', '☁️', '🌈', '☁️'], missingIndex: 1, choices: ['☁️', '🌧️', '⭐️'] },
+  { pattern: ['🌈', '☁️', '☀️', '🌈', '☁️', '☀️'], missingIndex: 4, choices: ['☀️', '🌈', '☁️'] },
   { pattern: ['🐙', '🐙', '🐢', '🐙', '🐙', '🐢', '🐙'], missingIndex: 6, choices: ['🐢', '🐙', '🐳'] },
+  { pattern: ['🍉', '🍍', '🍉', '🍍', '🍉', '🍍', '🍉'], missingIndex: 6, choices: ['🍉', '🍍', '🍒'] },
+  { pattern: ['🚲', '🛴', '🚲', '🛴', '🚲', '🛴', '🚲'], missingIndex: 6, choices: ['🛴', '🚲', '🚗'] },
+  { pattern: ['🐞', '🐞', '🪲', '🐞', '🐞', '🪲', '🐞', '🐞'], missingIndex: 7, choices: ['🪲', '🐞', '🕷️'] },
+  { pattern: ['⛄️', '❄️', '🎄', '⛄️', '❄️', '🎄', '⛄️'], missingIndex: 6, choices: ['🎄', '⛄️', '❄️'] },
+  { pattern: ['🚌', '🚲', '✈️', '🚌', '🚲', '✈️', '🚌', '🚲'], missingIndex: 7, choices: ['✈️', '🚲', '🛰️'] },
+  { pattern: ['⭐️', '⭐️', '🌙', '⭐️', '⭐️', '🌙', '⭐️', '⭐️', '🌙'], missingIndex: 8, choices: ['🌙', '⭐️', '☀️'] },
 ]
 
 const placeholder = '⬜️'
@@ -34,24 +40,29 @@ function App() {
   const [feedback, setFeedback] = useState<'idle' | 'correct' | 'wrong'>('idle')
   const [locked, setLocked] = useState(false)
   const [round, setRound] = useState(1)
+  const [score, setScore] = useState(0)
+  const [madeMistake, setMadeMistake] = useState(false)
 
   const activeLevel = levels[levelIndex]
+  const totalLevels = levels.length
   const displayPattern = useMemo(
     () => activeLevel.pattern.map((emoji, idx) => (idx === activeLevel.missingIndex ? placeholder : emoji)),
     [activeLevel],
   )
   const answer = activeLevel.pattern[activeLevel.missingIndex]
-  const nextIndex = (levelIndex + 1) % levels.length
+  const nextIndex = (levelIndex + 1) % totalLevels
   const progressPips = levels.map((_, idx) => {
     if (idx < levelIndex) return '⭐️'
     if (idx === levelIndex) return feedback === 'correct' ? '✅' : '✨'
     return '⚪️'
   })
+  const difficulty = levelIndex < 4 ? 'Sprout' : levelIndex < 8 ? 'Explorer' : 'Trailblazer'
 
   const advance = () => {
     setLevelIndex(nextIndex)
     setFeedback('idle')
     setLocked(false)
+    setMadeMistake(false)
     if (nextIndex === 0) setRound((value) => value + 1)
   }
 
@@ -60,9 +71,12 @@ function App() {
     if (choice === answer) {
       setFeedback('correct')
       setLocked(true)
+      const earned = madeMistake ? 1 : 2
+      setScore((value) => value + earned)
       setTimeout(advance, 1000)
     } else {
       setFeedback('wrong')
+      setMadeMistake(true)
       setTimeout(() => setFeedback('idle'), 450)
     }
   }
@@ -72,6 +86,8 @@ function App() {
     setFeedback('idle')
     setLocked(false)
     setRound(1)
+    setScore(0)
+    setMadeMistake(false)
   }
 
   return (
@@ -81,6 +97,23 @@ function App() {
         <button className="ghost-button" onClick={restart} aria-label="Restart patterns">
           ▶️
         </button>
+      </div>
+
+      <div className="stats" aria-live="polite">
+        <div className="stats__item">
+          <span className="stats__label">Level</span>
+          <span className="stats__value">
+            {levelIndex + 1}/{totalLevels}
+          </span>
+        </div>
+        <div className="stats__item">
+          <span className="stats__label">Score</span>
+          <span className="stats__value">{score} ⭐</span>
+        </div>
+        <div className="stats__item">
+          <span className="stats__label">Rank</span>
+          <span className="stats__value">{difficulty}</span>
+        </div>
       </div>
 
       <section className={`board board--${feedback}`}>
