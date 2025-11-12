@@ -42,12 +42,17 @@ function App() {
   const [round, setRound] = useState(1)
   const [score, setScore] = useState(0)
   const [madeMistake, setMadeMistake] = useState(false)
+  const [showAnswer, setShowAnswer] = useState(false)
 
   const activeLevel = levels[levelIndex]
   const totalLevels = levels.length
   const displayPattern = useMemo(
-    () => activeLevel.pattern.map((emoji, idx) => (idx === activeLevel.missingIndex ? placeholder : emoji)),
-    [activeLevel],
+    () =>
+      activeLevel.pattern.map((emoji, idx) => {
+        if (idx !== activeLevel.missingIndex) return emoji
+        return showAnswer ? emoji : placeholder
+      }),
+    [activeLevel, showAnswer],
   )
   const answer = activeLevel.pattern[activeLevel.missingIndex]
   const nextIndex = (levelIndex + 1) % totalLevels
@@ -63,6 +68,7 @@ function App() {
     setFeedback('idle')
     setLocked(false)
     setMadeMistake(false)
+    setShowAnswer(false)
     if (nextIndex === 0) setRound((value) => value + 1)
   }
 
@@ -71,6 +77,7 @@ function App() {
     if (choice === answer) {
       setFeedback('correct')
       setLocked(true)
+      setShowAnswer(true)
       const earned = madeMistake ? 1 : 2
       setScore((value) => value + earned)
       setTimeout(advance, 1000)
@@ -88,6 +95,7 @@ function App() {
     setRound(1)
     setScore(0)
     setMadeMistake(false)
+    setShowAnswer(false)
   }
 
   return (
